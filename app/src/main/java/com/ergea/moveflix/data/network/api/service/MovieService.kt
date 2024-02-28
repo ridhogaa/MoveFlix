@@ -1,0 +1,66 @@
+package com.ergea.moveflix.data.network.api.service
+
+import com.chuckerteam.chucker.api.ChuckerInterceptor
+import com.ergea.moveflix.BuildConfig
+import com.ergea.moveflix.data.network.api.model.GetGenreResponse
+import com.ergea.moveflix.data.network.api.model.GetMovieResponse
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.GET
+import java.util.concurrent.TimeUnit
+
+
+interface MovieService {
+
+    @GET("genre/movie/list")
+    suspend fun getGenre() : GetGenreResponse
+
+    @GET("movie/now_playing")
+    suspend fun getMovieNowPlaying(): GetMovieResponse
+
+    companion object {
+        @JvmStatic
+        operator fun invoke(chucker: ChuckerInterceptor): MovieService {
+            val httpLoggingInterceptor= if (BuildConfig.DEBUG){
+                HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
+            } else {
+                HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.NONE)
+            }
+            val okHttpClient = OkHttpClient.Builder()
+                .retryOnConnectionFailure(true)
+                .addInterceptor(httpLoggingInterceptor)
+                .addInterceptor{
+                    val originalRequest = it.request()
+                    val originalHttpUrl = originalRequest.url
+
+                    val url = originalHttpUrl.newBuilder()
+                        .addQueryParameter("api_key", BuildConfig.API_KEY)
+                        .build()
+
+                    val requestBuilder = originalRequest.newBuilder().url(url)
+                    val request = requestBuilder.build()
+
+                    return@addInterceptor it.proceed(request)
+                }
+                .addInterceptor {
+                    val request = it.request()
+                        .newBuilder()
+                        .addHeader("Content-Type", "application/json")
+                        .build()
+                    return@addInterceptor it.proceed(request)
+                }
+                .pingInterval(10, TimeUnit.SECONDS)
+                .readTimeout(30, TimeUnit.SECONDS)
+                .connectTimeout(30, TimeUnit.SECONDS)
+                .build()
+            val retrofit = Retrofit.Builder()
+                .baseUrl(BuildConfig.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(okHttpClient)
+                .build()
+            return retrofit.create(MovieService::class.java)
+        }
+    }
+}
