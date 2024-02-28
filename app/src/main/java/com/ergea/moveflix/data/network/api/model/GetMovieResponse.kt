@@ -1,6 +1,8 @@
 package com.ergea.moveflix.data.network.api.model
 
 
+import com.ergea.moveflix.model.Genre
+import com.ergea.moveflix.model.Movie
 import com.google.gson.annotations.SerializedName
 
 data class GetMovieResponse(
@@ -53,3 +55,9 @@ data class GetMovieResponse(
         val voteCount: Int
     )
 }
+
+fun GetMovieResponse.Result.toMovie() = Movie(
+    id = this.id,
+    name = this.title,
+    img = this.posterPath
+)

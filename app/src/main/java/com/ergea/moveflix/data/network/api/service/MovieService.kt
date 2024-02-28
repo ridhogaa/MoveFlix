@@ -9,21 +9,24 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
+import retrofit2.http.Query
 import java.util.concurrent.TimeUnit
 
 
 interface MovieService {
 
     @GET("genre/movie/list")
-    suspend fun getGenre() : GetGenreResponse
+    suspend fun getGenre(): GetGenreResponse
 
-    @GET("movie/now_playing")
-    suspend fun getMovieNowPlaying(): GetMovieResponse
+    @GET("discover/movie")
+    suspend fun getMovieByGenre(
+        @Query("with_genre") genre: String
+    ): GetMovieResponse
 
     companion object {
         @JvmStatic
         operator fun invoke(chucker: ChuckerInterceptor): MovieService {
-            val httpLoggingInterceptor= if (BuildConfig.DEBUG){
+            val httpLoggingInterceptor = if (BuildConfig.DEBUG) {
                 HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
             } else {
                 HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.NONE)
@@ -31,7 +34,7 @@ interface MovieService {
             val okHttpClient = OkHttpClient.Builder()
                 .retryOnConnectionFailure(true)
                 .addInterceptor(httpLoggingInterceptor)
-                .addInterceptor{
+                .addInterceptor {
                     val originalRequest = it.request()
                     val originalHttpUrl = originalRequest.url
 

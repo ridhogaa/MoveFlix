@@ -4,9 +4,11 @@ import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.ergea.moveflix.data.network.api.service.MovieService
 import com.ergea.moveflix.data.repository.GenreRepository
 import com.ergea.moveflix.data.repository.GenreRepositoryImpl
+import com.ergea.moveflix.data.repository.MovieRepository
+import com.ergea.moveflix.data.repository.MovieRepositoryImpl
 import com.ergea.moveflix.presentation.home.HomeViewModel
+import com.ergea.moveflix.presentation.movelist.MovieListViewModel
 import org.koin.android.ext.koin.androidContext
-import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.module.Module
 import org.koin.dsl.module
@@ -20,10 +22,12 @@ object AppModules {
 
     private val repositoryModule = module {
         single<GenreRepository> { GenreRepositoryImpl(get()) }
+        single<MovieRepository> { MovieRepositoryImpl(get()) }
     }
 
     private val viewModelModule = module {
         viewModelOf(::HomeViewModel)
+        viewModelOf(::MovieListViewModel)
     }
 
     val modules: List<Module> = listOf(

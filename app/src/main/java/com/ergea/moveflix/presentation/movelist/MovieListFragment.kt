@@ -1,4 +1,4 @@
-package com.ergea.moveflix.presentation.home
+package com.ergea.moveflix.presentation.movelist
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,76 +8,72 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.GridLayoutManager
-import com.ergea.moveflix.databinding.FragmentHomeBinding
-import com.ergea.moveflix.presentation.home.adapter.GenreAdapter
-import com.ergea.moveflix.utils.Rid
+import com.ergea.moveflix.databinding.FragmentMovieListBinding
+import com.ergea.moveflix.presentation.movelist.adapter.MovieGenreAdapter
 import com.ergea.moveflix.utils.proceedWhen
 import com.ergea.moveflix.utils.show
 import com.ergea.moveflix.utils.showSnackBar
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class HomeFragment : Fragment() {
+class MovieListFragment : Fragment() {
 
-    private val viewModel: HomeViewModel by viewModel()
-    private var _binding: FragmentHomeBinding? = null
+    private val viewModel: MovieListViewModel by viewModel()
+    private var _binding: FragmentMovieListBinding? = null
+    private val navArgs: MovieListFragmentArgs by navArgs()
     private val binding get() = _binding!!
-    private val genreAdapter: GenreAdapter by lazy {
-        GenreAdapter { data ->
-            findNavController().navigate(
-                HomeFragmentDirections.actionHomeFragmentToMovieListFragment(
-                    data.id.toString(),
-                    data.name
-                )
-            )
+    private val movieAdapter: MovieGenreAdapter by lazy {
+        MovieGenreAdapter { data ->
+
         }
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentHomeBinding.inflate(layoutInflater, container, false)
+        _binding = FragmentMovieListBinding.inflate(layoutInflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.tvGenre.text = navArgs.genreName
         fetchData()
-        setRecyclerViewGenre()
+        setRecyclerViewMovie()
     }
 
     private fun fetchData() = with(viewModel) {
-        getGenre()
+        getMovieByGenre(navArgs.genreName)
     }
 
-    private fun setRecyclerViewGenre() {
-        binding.rvGenre.apply {
+    private fun setRecyclerViewMovie() {
+        binding.rvMovie.apply {
             layoutManager = GridLayoutManager(requireContext(), 2)
-            adapter = this@HomeFragment.genreAdapter
+            adapter = this@MovieListFragment.movieAdapter
         }
-        setObserveDataGenre()
+        setObserveDataMovie()
     }
 
-    private fun setObserveDataGenre() = binding.run {
+    private fun setObserveDataMovie() = binding.run {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.genreResponse.collect {
+                viewModel.movieResponse.collect {
                     it.proceedWhen(
                         doOnSuccess = { result ->
-                            rvGenre.show(true)
+                            rvMovie.show(true)
                             pbLoading.show(false)
                             result.payload?.let { payload ->
-                                genreAdapter.setItems(payload)
+                                movieAdapter.setItems(payload)
                             }
                         },
                         doOnLoading = {
-                            rvGenre.show(false)
+                            rvMovie.show(false)
                             pbLoading.show(true)
                         },
                         doOnError = { err ->
-                            rvGenre.show(false)
+                            rvMovie.show(false)
                             pbLoading.show(false)
                             root.showSnackBar(err.message ?: "Check ur connection please..")
                         }
@@ -91,4 +87,5 @@ class HomeFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
 }
