@@ -52,12 +52,19 @@ data class GetMovieResponse(
         @SerializedName("vote_average")
         val voteAverage: Double,
         @SerializedName("vote_count")
-        val voteCount: Int
+        val voteCount: Int,
+        @field:SerializedName("runtime")
+        val runtime: Int? = null,
     )
 }
 
 fun GetMovieResponse.Result.toMovie() = Movie(
     id = this.id,
     name = this.title,
-    img = this.posterPath
+    img = this.posterPath,
+    overview = this.overview,
+    runtime = this.runtime,
+    releaseDate = this.releaseDate,
+    voteAverage = this.voteAverage,
+    voteCount = this.voteCount.toDouble(),
 )

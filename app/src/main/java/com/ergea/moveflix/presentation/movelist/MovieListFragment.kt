@@ -11,6 +11,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.GridLayoutManager
 import com.ergea.moveflix.databinding.FragmentMovieListBinding
+import com.ergea.moveflix.presentation.detail.DetailActivity
 import com.ergea.moveflix.presentation.movelist.adapter.MovieGenreAdapter
 import com.ergea.moveflix.utils.proceedWhen
 import com.ergea.moveflix.utils.show
@@ -26,7 +27,7 @@ class MovieListFragment : Fragment() {
     private val binding get() = _binding!!
     private val movieAdapter: MovieGenreAdapter by lazy {
         MovieGenreAdapter { data ->
-
+            DetailActivity.startActivity(requireContext(), data.id)
         }
     }
 
@@ -65,7 +66,7 @@ class MovieListFragment : Fragment() {
                             rvMovie.show(true)
                             pbLoading.show(false)
                             result.payload?.let { payload ->
-                                movieAdapter.setItems(payload)
+                                movieAdapter.setItems(payload.shuffled())
                             }
                         },
                         doOnLoading = {
