@@ -1,10 +1,10 @@
 package com.ergea.moveflix.utils
 
+import android.util.Log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onStart
-import kotlin.Exception
 
 
 sealed class Resource<T>(

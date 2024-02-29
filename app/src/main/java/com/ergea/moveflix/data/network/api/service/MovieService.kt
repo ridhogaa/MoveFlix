@@ -4,11 +4,14 @@ import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.ergea.moveflix.BuildConfig
 import com.ergea.moveflix.data.network.api.model.GetGenreResponse
 import com.ergea.moveflix.data.network.api.model.GetMovieResponse
+import com.ergea.moveflix.data.network.api.model.GetMovieVideoResponse
+import com.ergea.moveflix.data.network.api.model.GetReviewResponse
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Query
 import java.util.concurrent.TimeUnit
 
@@ -22,6 +25,21 @@ interface MovieService {
     suspend fun getMovieByGenre(
         @Query("with_genre") genre: String
     ): GetMovieResponse
+
+    @GET("movie/{id}")
+    suspend fun getMovieById(
+        @Path("id") id: Int
+    ): GetMovieResponse.Result
+
+    @GET("movie/{id}/reviews")
+    suspend fun getReviewsByMovieId(
+        @Path("id") id: Int
+    ): GetReviewResponse
+
+    @GET("movie/{movie_id}/videos")
+    suspend fun getMovieVideo(
+        @Path("movie_id") movieId: Int
+    ): GetMovieVideoResponse
 
     companion object {
         @JvmStatic
