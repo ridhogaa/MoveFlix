@@ -71,7 +71,7 @@ class DetailActivity : AppCompatActivity() {
     private fun observeDataDetailMovie() = binding.run {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.movieResponse.collect {
+                viewModel.movieResponse.collectLatest {
                     it.proceedWhen(
                         doOnSuccess = { result ->
                             pbLoading.show(false)
@@ -82,7 +82,7 @@ class DetailActivity : AppCompatActivity() {
                         },
                         doOnError = { err ->
                             pbLoading.show(false)
-                            binding.root.showSnackBar(err.message ?: "Check ur connection please..")
+                            binding.root.showSnackBar(err.exception?.message.orEmpty() ?: "Check ur connection please..")
                         }
                     )
                 }
@@ -134,7 +134,7 @@ class DetailActivity : AppCompatActivity() {
                             rvReviews.show(false)
                             pbLoadingReview.show(false)
                             tvEmptyReview.show(false)
-                            binding.root.showSnackBar(err.message ?: "Check ur connection please..")
+                            binding.root.showSnackBar(err.exception?.message.orEmpty() ?: "Check ur connection please..")
                         },
                         doOnEmpty = {
                             pbLoadingReview.show(false)
@@ -175,7 +175,7 @@ class DetailActivity : AppCompatActivity() {
                         doOnError = { err ->
                             rvTrailer.show(false)
                             pbLoadingTrailer.show(false)
-                            binding.root.showSnackBar(err.message ?: "Check ur connection please..")
+                            binding.root.showSnackBar(err.exception?.message.orEmpty() ?: "Check ur connection please..")
                         }
                     )
                 }

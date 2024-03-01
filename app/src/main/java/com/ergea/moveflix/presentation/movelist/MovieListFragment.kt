@@ -76,7 +76,7 @@ class MovieListFragment : Fragment() {
                         doOnError = { err ->
                             rvMovie.show(false)
                             pbLoading.show(false)
-                            root.showSnackBar(err.message ?: "Check ur connection please..")
+                            root.showSnackBar(err.exception?.message.orEmpty() ?: "Check ur connection please..")
                         }
                     )
                 }
