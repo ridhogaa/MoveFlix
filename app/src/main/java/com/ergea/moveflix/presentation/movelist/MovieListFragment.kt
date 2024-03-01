@@ -46,7 +46,7 @@ class MovieListFragment : Fragment() {
     }
 
     private fun fetchData() = with(viewModel) {
-        getMovieByGenre(navArgs.genreName)
+        getMovieByGenre(navArgs.genreId)
     }
 
     private fun setRecyclerViewMovie() {

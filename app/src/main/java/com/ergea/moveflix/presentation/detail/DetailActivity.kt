@@ -52,6 +52,9 @@ class DetailActivity : AppCompatActivity() {
         setContentView(binding.root)
         setSupportActionBar(binding.toolbarDetail)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        binding.toolbarDetail.setNavigationOnClickListener {
+            onBackPressed()
+        }
         this.transparentStatusBar()
         fetchData()
         observeDataDetailMovie()
