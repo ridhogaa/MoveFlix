@@ -23,7 +23,7 @@ interface MovieService {
 
     @GET("discover/movie")
     suspend fun getMovieByGenre(
-        @Query("with_genre") genre: String
+        @Query("with_genres") genre: String
     ): GetMovieResponse
 
     @GET("movie/{id}")
